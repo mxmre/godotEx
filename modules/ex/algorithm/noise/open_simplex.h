@@ -25,6 +25,7 @@ namespace ex::algorithm::noise
 		static constexpr real_t STRETCH_3D = -1.0 / 6.0;
 		static constexpr real_t SQUISH_3D = 1.0 / 3.0;
 	public:
+		static Ref<OpenSimplex> get_from_seed(uint64_t seed);
 		OpenSimplex();
 		OpenSimplex(uint64_t seed);
 		virtual real_t get_noise2d_at(real_t x, real_t y);

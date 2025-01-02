@@ -3,6 +3,7 @@
 void ex::algorithm::noise::OpenSimplex::_bind_methods() {
 	ClassDB::bind_compatibility_method(D_METHOD("get_noise2d_at", "x", "y"), &OpenSimplex::get_noise2d_at);
 	ClassDB::bind_compatibility_method(D_METHOD("get_noise3d_at", "x", "y", "z"), &OpenSimplex::get_noise3d_at);
+	ClassDB::bind_static_method("OpenSimplex", D_METHOD("get_from_seed", "seed"), &OpenSimplex::get_from_seed);
 }
 
 void ex::algorithm::noise::OpenSimplex::_init_noise() {
@@ -14,8 +15,12 @@ void ex::algorithm::noise::OpenSimplex::_init_noise() {
 	ex::algorithm::shuffle(this->_permutations, this->_rng);
 }
 
-ex::algorithm::noise::OpenSimplex::OpenSimplex():BasicNoise()
-{
+Ref<ex::algorithm::noise::OpenSimplex> ex::algorithm::noise::OpenSimplex::get_from_seed(uint64_t seed) {
+	return Ref<OpenSimplex>(memnew(OpenSimplex(seed)));
+}
+
+ex::algorithm::noise::OpenSimplex::OpenSimplex() :
+		BasicNoise() {
 
 }
 
