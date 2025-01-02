@@ -5,7 +5,7 @@
 #include "../algorithm_f.h"
 namespace ex::algorithm::noise
 {
-	class ImprovedPerlinNoise : BasicNoise
+	class ImprovedPerlinNoise : public BasicNoise
 	{
 	GDCLASS(ImprovedPerlinNoise, BasicNoise);
 
