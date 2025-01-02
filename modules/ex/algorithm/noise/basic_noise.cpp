@@ -13,6 +13,8 @@ void ex::algorithm::noise::BasicNoise::_bind_methods() {
 				 "set_seed", "get_seed");
 }
 
+void ex::algorithm::noise::BasicNoise::_init_noise() {}
+
 ex::algorithm::noise::BasicNoise::BasicNoise() :
 		_rng(memnew(RandomNumberGenerator())) {
 	this->_rng->randomize();

@@ -10,7 +10,7 @@ namespace ex::algorithm::noise
 
 	protected:
 		static void _bind_methods();
-		virtual void _init_noise() = 0;
+		virtual void _init_noise();
 		Ref<RandomNumberGenerator> _rng;
 	public:
 		BasicNoise();
