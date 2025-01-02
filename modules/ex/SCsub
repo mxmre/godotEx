@@ -1,0 +1,13 @@
+#!/usr/bin/env python
+#from misc.utility.scons_hints import *
+
+Import("env")
+
+env_ex = env.Clone()
+
+
+env_ex.add_source_files(env.modules_sources, "./algorithm/*.cpp")
+env_ex.add_source_files(env.modules_sources, "./algorithm/noise/*.cpp")
+env_ex.add_source_files(env.modules_sources, "./data_structure/*.cpp")
+env_ex.add_source_files(env.modules_sources, "./math/*.cpp")
+env_ex.add_source_files(env.modules_sources, "*.cpp")

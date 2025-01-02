@@ -131,6 +131,7 @@ enum class EulerOrder {
  * in contrast to integer numbers. Precision can be controlled with the
  * presence or absence of the REAL_T_IS_DOUBLE define.
  */
+#define REAL_T_IS_DOUBLE
 #ifdef REAL_T_IS_DOUBLE
 typedef double real_t;
 #else
