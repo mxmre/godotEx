@@ -1,0 +1,16 @@
+#!/usr/bin/env python
+
+Import("env")
+
+env_ex = env.Clone()
+
+source_dirs = [
+    "./algorithm/*.cpp",
+    "./algorithm/noise/*.cpp",
+    "./data_structure/*.cpp",
+    "./math/*.cpp",
+    "./*.cpp"
+]
+
+for dir in source_dirs:
+    env_ex.add_source_files(env.modules_sources, dir)
