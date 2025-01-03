@@ -1,0 +1,1 @@
+scons platform=windows target=editor vsproj=yes dev_build=yes vsproj_gen_only=no arch=x86_64 -j1
