@@ -1,5 +1,6 @@
 #ifndef EX_ALGORITHM_H
 #define EX_ALGORITHM_H
+#include <algorithm>
 #include "core/object/ref_counted.h"
 #include "core/math/random_number_generator.h"
 namespace ex::algorithm
@@ -13,17 +14,14 @@ namespace ex::algorithm
 			return;
 			
 		}
-		for (int64_t i = 0, index_to_shuffle = rng->randi_range(0, vector.size() - 1); i < vector.size(); ++i) {
-			if (i != index_to_shuffle) {
-				T a = vector[i];
-				T b = vector[index_to_shuffle];
-				T c = a;
-				a = b;
-				b = c;
-				vector.set(i, a);
-				vector.set(index_to_shuffle, b);
-			}
+		for (int64_t i = vector.size() - 1; i > 0; --i) {
+			int64_t j = rng->randi_range(0, i);
+			T a = vector[i];
+			T b = vector[j];
+			vector.set(i, b);
+			vector.set(j, a);
 		}
+
 	}
 }
 

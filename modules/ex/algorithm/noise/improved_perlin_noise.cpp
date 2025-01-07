@@ -1,58 +1,62 @@
 #include "improved_perlin_noise.h"
 #include "core/string/print_string.h"
-void ex::algorithm::noise::ImprovedPerlin::_bind_methods() {
-	ClassDB::bind_compatibility_method(D_METHOD("get_noise2d_at", "x", "y"), &ImprovedPerlin::get_noise2d_at);
-	ClassDB::bind_compatibility_method(D_METHOD("get_noise3d_at", "x", "y", "z"), &ImprovedPerlin::get_noise3d_at);
-	ClassDB::bind_static_method("ImprovedPerlin", D_METHOD("get_from_seed", "seed"), &ImprovedPerlin::get_from_seed);
+void ex::algorithm::noise::ImprovedPerlinNoise::_bind_methods() {
+	ClassDB::bind_compatibility_method(D_METHOD("get_noise1d", "x"), &ImprovedPerlinNoise::get_noise1d);
+	ClassDB::bind_compatibility_method(D_METHOD("get_noise2d", "x", "y"), &ImprovedPerlinNoise::get_noise2d);
+	ClassDB::bind_compatibility_method(D_METHOD("get_noise3d", "x", "y", "z"), &ImprovedPerlinNoise::get_noise3d);
+	ClassDB::bind_static_method("ImprovedPerlinNoise", D_METHOD("get_from_seed", "seed"), &ImprovedPerlinNoise::get_from_seed);
 }
 
-real_t ex::algorithm::noise::ImprovedPerlin::lerp(real_t t, real_t a, real_t b) {
+real_t ex::algorithm::noise::ImprovedPerlinNoise::lerp(real_t t, real_t a, real_t b) {
 	return a + t * (b - a);
 }
 
-real_t ex::algorithm::noise::ImprovedPerlin::fade(real_t t) {
+real_t ex::algorithm::noise::ImprovedPerlinNoise::fade(real_t t) {
 	return t * t * t * (t * (t * 6 - 15) + 10);
 }
 
-real_t ex::algorithm::noise::ImprovedPerlin::grad(int8_t hash, real_t x, real_t y, real_t z) {
-	int8_t h = hash & 15;
+real_t ex::algorithm::noise::ImprovedPerlinNoise::grad(int16_t hash, real_t x, real_t y, real_t z) {
+	int16_t h = hash & 15;
 	double u = h < 8 ? x : y;
 	double v = h < 4 ? y : (h == 12 || h == 14) ? x
 												: z;
 	return ((h & 1) == 0 ? u : -u) + ((h & 2) == 0 ? v : -v);
 }
 
-void ex::algorithm::noise::ImprovedPerlin::init_noise() {
+void ex::algorithm::noise::ImprovedPerlinNoise::reset_noise() {
 	this->_permutations.resize(256);
 	for (int64_t i = 0; i < this->_permutations.size(); ++i) {
 		this->_permutations.set(i, i);
 	}
 	ex::algorithm::shuffle(this->_permutations, _rng);
-	print_line(this->_permutations.size());
 	this->_permutations.append_array(this->_permutations);
-	print_line(this->_permutations.size());
 }
 
-Ref<ex::algorithm::noise::ImprovedPerlin> ex::algorithm::noise::ImprovedPerlin::get_from_seed(uint64_t seed) {
-	return Ref<ImprovedPerlin>(memnew(ImprovedPerlin(seed)));
+real_t ex::algorithm::noise::ImprovedPerlinNoise::get_noise1d(real_t x) {
+	return this->get_noise3d(x, 0.0, 0.0);
+	;
 }
 
-ex::algorithm::noise::ImprovedPerlin::ImprovedPerlin() :
-		BasicNoise() { this->init_noise(); }
-
-ex::algorithm::noise::ImprovedPerlin::ImprovedPerlin(uint64_t seed) : BasicNoise(seed) {
-	this->init_noise();
+Ref<ex::algorithm::noise::ImprovedPerlinNoise> ex::algorithm::noise::ImprovedPerlinNoise::get_from_seed(uint64_t seed) {
+	return Ref<ImprovedPerlinNoise>(memnew(ImprovedPerlinNoise(seed)));
 }
 
-real_t ex::algorithm::noise::ImprovedPerlin::get_noise2d_at(real_t x, real_t y) {
-	return this->get_noise3d_at(x, y, 0.0);
+ex::algorithm::noise::ImprovedPerlinNoise::ImprovedPerlinNoise() :
+		RNGBasedNoise() { this->reset_noise(); }
+
+ex::algorithm::noise::ImprovedPerlinNoise::ImprovedPerlinNoise(uint64_t seed) : RNGBasedNoise(seed) {
+	this->reset_noise();
 }
 
-real_t ex::algorithm::noise::ImprovedPerlin::get_noise3d_at(real_t x, real_t y, real_t z) {
+real_t ex::algorithm::noise::ImprovedPerlinNoise::get_noise2d(real_t x, real_t y) {
+	return this->get_noise3d(x, y, 0.0);
+}
+
+real_t ex::algorithm::noise::ImprovedPerlinNoise::get_noise3d(real_t x, real_t y, real_t z) {
 	// Находим координаты ячейки
-	int64_t X = static_cast<int64_t>(x) & 255;
-	int64_t Y = static_cast<int64_t>(y) & 255;
-	int64_t Z = static_cast<int64_t>(y) & 255;
+	int16_t X = static_cast<int64_t>(Math::floor(x)) & 255;
+	int16_t Y = static_cast<int64_t>(Math::floor(y)) & 255;
+	int16_t Z = static_cast<int64_t>(Math::floor(z)) & 255;
 
 	// Находим относительные координаты внутри ячейки
 	x -= Math::floor(x);
@@ -65,12 +69,12 @@ real_t ex::algorithm::noise::ImprovedPerlin::get_noise3d_at(real_t x, real_t y, 
 	real_t w = fade(z);
 
 	// Хеширование координат углов куба
-	int64_t A = this->_permutations[X] + Y;
-	int64_t AA = this->_permutations[A] + Z;
-	int64_t AB = this->_permutations[A + 1] + Z;
-	int64_t B = this->_permutations[X + 1] + Y;
-	int64_t BA = this->_permutations[B] + Z;
-	int64_t BB = this->_permutations[B + 1] + Z;
+	int16_t A = this->_permutations[X] + Y;
+	int16_t AA = this->_permutations[A] + Z;
+	int16_t AB = this->_permutations[A + 1] + Z;
+	int16_t B = this->_permutations[X + 1] + Y;
+	int16_t BA = this->_permutations[B] + Z;
+	int16_t BB = this->_permutations[B + 1] + Z;
 
 	// Градиентная интерполяция
 	return lerp(w,

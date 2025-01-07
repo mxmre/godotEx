@@ -1,13 +1,14 @@
-#include "open_simplex.h"
+#include "open_simplex_noise.h"
 #include "core/string/print_string.h"
 
-void ex::algorithm::noise::OpenSimplex::_bind_methods() {
-	ClassDB::bind_compatibility_method(D_METHOD("get_noise2d_at", "x", "y"), &OpenSimplex::get_noise2d_at);
-	ClassDB::bind_compatibility_method(D_METHOD("get_noise3d_at", "x", "y", "z"), &OpenSimplex::get_noise3d_at);
-	ClassDB::bind_static_method("OpenSimplex", D_METHOD("get_from_seed", "seed"), &OpenSimplex::get_from_seed);
+void ex::algorithm::noise::OpenSimplexNoise::_bind_methods() {
+	ClassDB::bind_compatibility_method(D_METHOD("get_noise1d", "x"), &OpenSimplexNoise::get_noise1d);
+	ClassDB::bind_compatibility_method(D_METHOD("get_noise2d", "x", "y"), &OpenSimplexNoise::get_noise2d);
+	ClassDB::bind_compatibility_method(D_METHOD("get_noise3d", "x", "y", "z"), &OpenSimplexNoise::get_noise3d);
+	ClassDB::bind_static_method("OpenSimplexNoise", D_METHOD("get_from_seed", "seed"), &OpenSimplexNoise::get_from_seed);
 }
 
-void ex::algorithm::noise::OpenSimplex::init_noise() {
+void ex::algorithm::noise::OpenSimplexNoise::reset_noise() {
 	print_line(this->_permutations.size());
 	this->_permutations.resize(PSIZE);
 	print_line(this->_permutations.size());
@@ -19,21 +20,25 @@ void ex::algorithm::noise::OpenSimplex::init_noise() {
 	print_line(this->_permutations.size());
 }
 
-Ref<ex::algorithm::noise::OpenSimplex> ex::algorithm::noise::OpenSimplex::get_from_seed(uint64_t seed) {
-	return Ref<OpenSimplex>(memnew(OpenSimplex(seed)));
+real_t ex::algorithm::noise::OpenSimplexNoise::get_noise1d(real_t x) {
+	return real_t();
 }
 
-ex::algorithm::noise::OpenSimplex::OpenSimplex() :
-		BasicNoise() {
-	this->init_noise();
+Ref<ex::algorithm::noise::OpenSimplexNoise> ex::algorithm::noise::OpenSimplexNoise::get_from_seed(uint64_t seed) {
+	return Ref<OpenSimplexNoise>(memnew(OpenSimplexNoise(seed)));
 }
 
-ex::algorithm::noise::OpenSimplex::OpenSimplex(uint64_t seed) :
-		BasicNoise(seed) {
-	this->init_noise();
+ex::algorithm::noise::OpenSimplexNoise::OpenSimplexNoise() :
+		RNGBasedNoise() {
+	this->reset_noise();
 }
 
-real_t ex::algorithm::noise::OpenSimplex::get_noise2d_at(real_t x, real_t y) {
+ex::algorithm::noise::OpenSimplexNoise::OpenSimplexNoise(uint64_t seed) :
+		RNGBasedNoise(seed) {
+	this->reset_noise();
+}
+
+real_t ex::algorithm::noise::OpenSimplexNoise::get_noise2d(real_t x, real_t y) {
 	// Place input coordinates onto grid.
 	double stretchOffset = (x + y) * STRETCH_2D;
 	double xs = x + stretchOffset;
@@ -73,7 +78,7 @@ real_t ex::algorithm::noise::OpenSimplex::get_noise2d_at(real_t x, real_t y) {
 	return value * 70;
 }
 
-real_t ex::algorithm::noise::OpenSimplex::get_noise3d_at(real_t x, real_t y, real_t z) {
+real_t ex::algorithm::noise::OpenSimplexNoise::get_noise3d(real_t x, real_t y, real_t z) {
 	// Place input coordinates on simplectic honeycomb.
 	double stretchOffset = (x + y + z) * STRETCH_3D;
 	double xs = x + stretchOffset;
@@ -114,7 +119,7 @@ real_t ex::algorithm::noise::OpenSimplex::get_noise3d_at(real_t x, real_t y, rea
 	return value * 32;
 }
 // Правильные значения градиентов для 2D шума
-const real_t ex::algorithm::noise::OpenSimplex::GRAD_2D[12][2] = {
+const double ex::algorithm::noise::OpenSimplexNoise::GRAD_2D[12][2] = {
 	{ 0.130526192220052, 0.99144486137381 },
 	{ 0.38268343236509, 0.923879532511287 },
 	{ 0.608761429008721, 0.793353340291235 },
@@ -130,7 +135,7 @@ const real_t ex::algorithm::noise::OpenSimplex::GRAD_2D[12][2] = {
 };
 
 
-const double ex::algorithm::noise::OpenSimplex::GRAD_3D[12][3] = {
+const double ex::algorithm::noise::OpenSimplexNoise::GRAD_3D[12][3] = {
 	{ 1, 1, 0 }, { -1, 1, 0 }, { 1, -1, 0 }, { -1, -1, 0 },
 	{ 1, 0, 1 }, { -1, 0, 1 }, { 1, 0, -1 }, { -1, 0, -1 },
 	{ 0, 1, 1 }, { 0, -1, 1 }, { 0, 1, -1 }, { 0, -1, -1 }

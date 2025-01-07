@@ -1,13 +1,13 @@
 #pragma once
 #include "core/math/math_funcs.h"
-#include "basic_noise.h"
+#include "rng_noise.h"
 #include "../algorithm_f.h"
 namespace ex::algorithm::noise
 {
 	//не работает :(
-	class OpenSimplex : public BasicNoise
+	class OpenSimplexNoise : public RNGBasedNoise
 	{
-	GDCLASS(OpenSimplex, BasicNoise);
+	GDCLASS(OpenSimplexNoise, RNGBasedNoise);
 	protected:
 		static void _bind_methods();
 		static constexpr double STRETCH_2D = -0.211324865405187;
@@ -24,12 +24,13 @@ namespace ex::algorithm::noise
 		
 		Vector<int32_t> _permutations;
 	public:
-		static Ref<OpenSimplex> get_from_seed(uint64_t seed);
-		OpenSimplex();
-		OpenSimplex(uint64_t seed);
-		virtual void init_noise();
-		virtual real_t get_noise2d_at(real_t x, real_t y);
-		virtual real_t get_noise3d_at(real_t x, real_t y, real_t z);
+		static Ref<OpenSimplexNoise> get_from_seed(uint64_t seed);
+		OpenSimplexNoise();
+		OpenSimplexNoise(uint64_t seed);
+		virtual void reset_noise();
+		virtual real_t get_noise1d(real_t x);
+		virtual real_t get_noise2d(real_t x, real_t y);
+		virtual real_t get_noise3d(real_t x, real_t y, real_t z);
 	};
 }
 
